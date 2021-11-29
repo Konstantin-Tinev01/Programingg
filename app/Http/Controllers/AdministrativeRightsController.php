@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Desk;
 use Illuminate\Http\Request;
 use App\Models\Room;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use PhpParser\Node\Expr\FuncCall;
 
 class AdministrativeRightsController extends Controller
 {
@@ -44,22 +47,26 @@ class AdministrativeRightsController extends Controller
         $this->validate($request, [
             'room_number' => 'required',
             'type_of_room' => 'required',
-            //'money_per_week' => 'required',
-            'count_of_desks' => 'required',
-            'room_manager' => 'required',
+            //'room_manager' => 'required',
             'id_of_room_manager' => 'required',
         ]);
+
+        $room_manager_name = User::find($request->id_of_room_manager)->name;
+        $room_manager_last_name = User::find($request->id_of_room_manager)->last_name;
 
         $room = Room::create([
             'room_number' => $request->room_number,
             'type_of_room' => $request->type_of_room,
             'money_per_week' => 0,
-            'count_of_desks' => $request->count_of_desks,
-            'room_manager' => $request->room_manager,
+            'count_of_desks' => 0,
+            'room_manager' => $room_manager_name." ".$room_manager_last_name,
             'id_of_room_manager' => $request->id_of_room_manager,
         ]);
 
-        return "Room name: ".$room->room_number;
+        DB::table('users')->where('id', $request->id_of_room_manager)->update(['room'=> $room->id]);
+        $user = DB::table('users')->where('id', $request->id_of_room_manager)->update(['role'=> 'room_manager']);
+
+        return redirect()->route('create_desks_api');
     }
 
     /**
@@ -104,8 +111,35 @@ class AdministrativeRightsController extends Controller
      */
     public function destroy($id)
     {
+        DB::table('users')->where('room', $id)->update(['role'=> 'client']);
+        DB::table('users')->where('room', $id)->update(['room'=> '0']);
         DB::table('rooms')->where('id', $id)->delete();
 
         return "Remove";
+    }
+
+    public function desks(Request $request)
+    {
+
+        $this->validate($request, [
+            'room' => 'required',
+            'room_manager' => 'required',
+            'price' => 'required',
+            'size' => 'required',
+            'position' => 'required',
+        ]);
+
+        $desks = Desk::create([
+            'room' => $request->room,
+            'client_id' => 0,
+            'room_manager' => $request->room_manager,
+            'price' => $request->price,
+            'size' => $request->size,
+            'is_taken' => false,
+            'time_for_taken' => now(),
+            'position' => $request->position,
+        ]);
+
+        return "desks";
     }
 }
