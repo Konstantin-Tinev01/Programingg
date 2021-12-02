@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdministrativeRightsController;
+use App\Http\Resources\UserResource;
+use App\Models\User;
 use PhpParser\Node\Expr\FuncCall;
 
 /*
@@ -21,6 +23,9 @@ Route::post('/register', [UserController::class, 'store'])->name('register_api')
 Route::get('/register', [UserController::class, 'create'])->middleware('guest');
 
 Route::post('/login', [UserController::class, 'login'])->middleware('guest')->name('login_api');
+Route::get('profil/{id}', function ($id) {
+    return new UserResource(User::find($id));
+})->name('profil');
 
 Route::get('/logout', [UserController::class, 'logout'])->middleware('auth');
 

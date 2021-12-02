@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
@@ -28,7 +31,6 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //return $request->name;
 
         $this->validate($request, [
             'name' => 'required|max:255',
@@ -49,7 +51,7 @@ class UserController extends Controller
         ]);
 
 
-        auth()->attempt($request->only('email', 'password'));
+        Auth::attempt($request->only('email', 'password'));
 
         return $user->createToken('token-name', ['room:enter'])->plainTextToken;
     }
@@ -95,7 +97,9 @@ class UserController extends Controller
             return back()->with('status', 'Invalid login details');
         }
 
-        return redirect()->route('home');
+        $id = auth()->user()->id;
+
+        return redirect()->route('profil', ['id' => $id]);
     }
 
     public function logout()

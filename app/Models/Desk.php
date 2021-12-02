@@ -35,4 +35,10 @@ class Desk extends Model
         'price',
         'time_for_taken',
     ];
+
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id');
+    }
+
 }
