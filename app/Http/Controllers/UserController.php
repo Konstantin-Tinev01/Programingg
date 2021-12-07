@@ -67,7 +67,7 @@ class UserController extends Controller
         if (User::find($id)) {
 
             $user = User::find($id);
-            return "Full name: ".$user->name." ".$user->last_name."\n Email: ".$user->email."\n Room: ".$user->room."\n Desk: ".$user->desk."\n Money: ".$user->money;
+            return "Id: ".$user->id."\n Full name: ".$user->name." ".$user->last_name."\n Email: ".$user->email."\n Room: ".$user->room."\n Desk: ".$user->desk."\n Money: ".$user->money;
 
         } else {
             return "Error";

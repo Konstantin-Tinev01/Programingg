@@ -66,7 +66,7 @@ class AdministrativeRightsController extends Controller
         DB::table('users')->where('id', $request->id_of_room_manager)->update(['room'=> $room->id]);
         $user = DB::table('users')->where('id', $request->id_of_room_manager)->update(['role'=> 'room_manager']);
 
-        return redirect()->route('create_desks_api');
+        return "Room";//redirect()->route('create_desks_api');
     }
 
     /**
@@ -77,6 +77,7 @@ class AdministrativeRightsController extends Controller
      */
     public function show($id)
     {
+
         return Room::find($id);
     }
 

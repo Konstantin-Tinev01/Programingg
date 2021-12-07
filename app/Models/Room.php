@@ -37,7 +37,8 @@ class Room extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_of_room_manager');
+        //$this->belongsTo(User::class, 'id_of_room_manager');
+        return $this->belongsTo(User::class, 'id_of_room_manager');;
     }
 
 }
