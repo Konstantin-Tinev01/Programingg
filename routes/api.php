@@ -10,7 +10,10 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\Room;
 use App\Http\Resources\DeskCollection;
+use App\Http\Resources\DeskResource;
 use App\Models\Desk;
+use Illuminate\Support\Facades\Redirect;
+use PhpParser\Node\Expr\FuncCall;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,37 +26,30 @@ use App\Models\Desk;
 |
 */
 
-Route::post('/register', [UserController::class, 'store'])->name('register_api');//->middleware('guest');
-Route::get('/register', [UserController::class, 'create']);//->middleware('guest');
+Route::resource('/users', UserController::class)->name('create','register_api');
 
 Route::post('/login', [UserController::class, 'login']);//->middleware('guest')->name('login_api');
 
-Route::get('/profil/{id}', function ($id) {
+Route::get('/user/{id}', function ($id) {
     return new UserResource(User::find($id));
 })->name('profil');//->middleware('auth');
 
 Route::get('/logout', [UserController::class, 'logout']);//->middleware('auth');
 
-
-Route::get('/client/{id}', [UserController::class, 'show']);//->middleware('auth')->middleware('admin');
-
-Route::get('/create/room', [AdministrativeRightsController::class, 'create']);//->middleware('auth')->middleware('admin');
-Route::post('/create/room', [AdministrativeRightsController::class, 'store'])->name('create_room_api');//->middleware('auth')->middleware('admin');
-
-
-Route::get('/rooms', function () {
-    return new RoomResource(Room::all());
-});//->middleware('auth');
-
-Route::get('/room/{id}', [AdministrativeRightsController::class, 'show']);//->middleware('auth')->middleware('admin');
+Route::resource('/rooms', AdministrativeRightsController::class)->name('create', 'create_room_api');//->middleware('auth')->middleware('admin');;
 
 Route::get('/room/{id}', function ($id) {
-    return new DeskCollection(Desk::where('room', $id)->get());
-});
+    return new RoomResource(Room::find($id));
+});//->middleware('auth');
 
-Route::delete('/room/delete/{id}', [AdministrativeRightsController::class, 'destroy'])->middleware('auth')->middleware('admin');
+Route::get('/room/desks/{id}', function ($id) {
+    return new DeskCollection(Desk::where('room', $id)->get());
+});//->middleware('auth');
 
 Route::post('/create/desks', [AdministrativeRightsController::class, 'desks'])->name('create_desks_api');//->middleware('auth')->middleware('admin');
+Route::get('/desk/{id}', function ($id) {
+    return new DeskResource(Desk::find($id));
+});//->middleware('auth');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();

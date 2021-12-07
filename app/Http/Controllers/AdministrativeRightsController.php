@@ -8,6 +8,8 @@ use App\Models\Room;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use PhpParser\Node\Expr\FuncCall;
+use App\Http\Resources\RoomCollection;
+use App\Http\Resources\RoomResource;
 
 class AdministrativeRightsController extends Controller
 {
@@ -23,7 +25,7 @@ class AdministrativeRightsController extends Controller
             //echo $room->id;sd
         //}
 
-        return Room::all();
+        return new RoomCollection(Room::all());
     }
 
     /**
@@ -77,8 +79,7 @@ class AdministrativeRightsController extends Controller
      */
     public function show($id)
     {
-
-        return Room::find($id);
+            return new RoomResource(Room::find($id));
     }
 
     /**
